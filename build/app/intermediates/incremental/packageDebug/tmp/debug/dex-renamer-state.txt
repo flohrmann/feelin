@@ -1,0 +1,4 @@
+#Sun Dec 19 14:40:59 CET 2021
+base.0=F\:\\Uni\\Hochschule\\Semester9\\eHealth\\App\\getting-started-with-flutter-event-calendar-in-10-minutes\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
+renamed.0=classes.dex
+path.0=classes.dex
