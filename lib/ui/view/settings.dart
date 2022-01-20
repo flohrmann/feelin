@@ -5,8 +5,18 @@ class SettingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.lightGreen,
         title: Text("Setting Page"),
+      ),
+      body: new Container(
+        alignment: Alignment.topLeft,
+        color: Colors.white70,
+
+        child: new Stack(
+          children: [
+
+          ],
+        ),
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:myflutterapp/datasource/MeetingDataSource.dart';
 import 'package:myflutterapp/dialog/appointment_creator.dart';
+import 'package:myflutterapp/ui/ThemeClass.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import './settings.dart';
 import './table.dart';
@@ -44,7 +45,8 @@ class _HomeViewState extends State<HomeView>
     return MaterialApp(
         home: Scaffold(
           appBar: AppBar(
-            backgroundColor: Colors.green,
+            //backgroundColor:Theme.of(context).appBarTheme.backgroundColor ,
+            backgroundColor: Colors.lightGreen,
             title: Text("Feelin"),
             actions: [
               PopupMenuButton<int>(
@@ -68,6 +70,7 @@ class _HomeViewState extends State<HomeView>
                       child: Text('Exit'),
                       value: 3,
                       onTap: () {
+                        //https://stackoverflow.com/questions/45109557/flutter-how-to-programmatically-exit-the-app
                         if(Platform.isAndroid){
                           SystemNavigator.pop();
                         }
@@ -97,7 +100,9 @@ class _HomeViewState extends State<HomeView>
                       appointmentTextStyle: TextStyle(
                           fontSize: 14,
                           fontStyle: FontStyle.italic,
-                          color: Colors.black)
+                          //color: Theme.of(context).appBarTheme.backgroundColor ,
+                          color: Colors.black
+                      )
                   ),
 
                   appointmentDisplayMode: MonthAppointmentDisplayMode.indicator
@@ -105,6 +110,7 @@ class _HomeViewState extends State<HomeView>
           floatingActionButton: FloatingActionButton(
             onPressed: addButtonPressed,
             child: Text ('+'),
+            //backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
             backgroundColor: Colors.red[600],
           ),
         )
@@ -140,6 +146,9 @@ class _HomeViewState extends State<HomeView>
     d.showAppointmentDialog(context, _calendarDataSource, _dateTime);
   }
 
+
+  //button functionality
+  //https://protocoderspoint.com/how-to-create-3-dot-popup-menu-item-on-appbar-flutter/
   void SelectedItem(BuildContext context, item) {
     switch(item) {
       case 0:
