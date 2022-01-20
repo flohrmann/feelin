@@ -1,20 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:myflutterapp/data/diary_entry.dart';
+import 'package:myflutterapp/data/symptom.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 class AppointmentCreator {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _moodEditingController = TextEditingController();
 
-  TimeOfDay _startTimeOfDay = TimeOfDay.now();
-  TimeOfDay _endTimeOfDay = TimeOfDay.now();
-
-  String moodValidator(String value) {
-    if (value == null || value.trim() == '') {
-      return 'Please add your mood';
-    }
-
-    return null;
-  }
+  final List<Symptom> symptoms = Symptom.getAllSymptoms();
+  int _feelingRating = 0;
+  bool _sleepQuality = false;
+  bool _hasEaten = false;
 
   Future<void> showAppointmentDialog(BuildContext context,
       CalendarDataSource calendarDataSource, DateTime currentDate) async {
@@ -30,62 +25,228 @@ class AppointmentCreator {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    TextFormField(
-                      controller: _moodEditingController,
-                      decoration: const InputDecoration(hintText: "Enter mood"),
-                      validator: moodValidator,
+                    Row(children: [
+                      Column(children: [
+                        Text("General feelings"),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _feelingRating = 1;
+                                    });
+                                  },
+                                  icon: Icon(
+                                    Icons.adjust,
+                                    color: _feelingRating == 1
+                                        ? Colors.red
+                                        : Colors.grey,
+                                  )),
+                              IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _feelingRating = 2;
+                                    });
+                                  },
+                                  icon: Icon(
+                                    Icons.adjust,
+                                    color: _feelingRating == 2
+                                        ? Colors.amber
+                                        : Colors.grey,
+                                  )),
+                              IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _feelingRating = 3;
+                                    });
+                                  },
+                                  icon: Icon(
+                                    Icons.adjust,
+                                    color: _feelingRating == 3
+                                        ? Colors.yellow
+                                        : Colors.grey,
+                                  )),
+                              IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _feelingRating = 4;
+                                    });
+                                  },
+                                  icon: Icon(
+                                    Icons.adjust,
+                                    color: _feelingRating == 4
+                                        ? Colors.lightGreen
+                                        : Colors.grey,
+                                  )),
+                              IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _feelingRating = 5;
+                                    });
+                                  },
+                                  icon: Icon(
+                                    Icons.adjust,
+                                    color: _feelingRating == 5
+                                        ? Colors.green
+                                        : Colors.grey,
+                                  ))
+                            ])
+                      ])
+                    ]),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Column(
+                          children: [
+                            Text("Sleep Quality"),
+                            Row(
+                              children: [
+                                IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _sleepQuality = false;
+                                      });
+                                    },
+                                    icon: Icon(
+                                      Icons.warning_amber_outlined,
+                                      color: _sleepQuality == false
+                                          ? Colors.red
+                                          : Colors.grey,
+                                    )),
+                                IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _sleepQuality = true;
+                                      });
+                                    },
+                                    icon: Icon(
+                                      Icons.check,
+                                      color: _sleepQuality == true
+                                          ? Colors.green
+                                          : Colors.grey,
+                                    )),
+                              ],
+                            )
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("Food intake"),
+                            Row(
+                              children: [
+                                IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _hasEaten = false;
+                                      });
+                                    },
+                                    icon: Icon(
+                                      Icons.warning_amber_outlined,
+                                      color: _hasEaten == false
+                                          ? Colors.red
+                                          : Colors.grey,
+                                    )),
+                                IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _hasEaten = true;
+                                      });
+                                    },
+                                    icon: Icon(
+                                      Icons.check,
+                                      color: _hasEaten == true
+                                          ? Colors.green
+                                          : Colors.grey,
+                                    )),
+                              ],
+                            )
+                          ],
+                        )
+                      ],
                     ),
-                    ListTile(
-                        onTap: () async {
-                          var res = await showTimePicker(
-                              context: context,
-                              initialTime: TimeOfDay.fromDateTime(currentDate)
-                          );
-                          if (res != null) {
+                    Row(
+                      children: [
+                        ChoiceChip(
+                          label: Text(symptoms[0].toString()),
+                          selected: symptoms[0].isSelected,
+                          onSelected: (bool newValue) {
                             setState(() {
-                              _startTimeOfDay = res;
+                              symptoms[0].isSelected = newValue;
                             });
-                          }
-                        },
-                        title: const Text('Start time of mood'),
-                        subtitle: Text(_startTimeOfDay?.format(context))
+                          },
+                        ),
+                        ChoiceChip(
+                          label: Text(symptoms[1].toString()),
+                          selected: symptoms[1].isSelected,
+                          onSelected: (bool newValue) {
+                            setState(() {
+                              symptoms[1].isSelected = newValue;
+                            });
+                          },
+                        )
+                      ],
                     ),
-                    ListTile(
-                        onTap: () async {
-                          var res = await showTimePicker(
-                              context: context,
-                              initialTime: TimeOfDay.fromDateTime(currentDate)
-                          );
-                          if (res != null) {
+                    Row(
+                      children: [
+                        ChoiceChip(
+                          label: Text(symptoms[2].toString()),
+                          selected: symptoms[2].isSelected,
+                          onSelected: (bool newValue) {
                             setState(() {
-                              _endTimeOfDay = res;
+                              symptoms[2].isSelected = newValue;
                             });
-                          }
-                        },
-                        title: const Text('End time of mood'),
-                        subtitle: Text(_endTimeOfDay?.format(context))
+                          },
+                        ),
+                        ChoiceChip(
+                          label: Text(symptoms[3].toString()),
+                          selected: symptoms[3].isSelected,
+                          onSelected: (bool newValue) {
+                            setState(() {
+                              symptoms[3].isSelected = newValue;
+                            });
+                          },
+                        )
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        ChoiceChip(
+                          label: Text(symptoms[4].toString()),
+                          selected: symptoms[4].isSelected,
+                          onSelected: (bool newValue) {
+                            setState(() {
+                              symptoms[4].isSelected = newValue;
+                            });
+                          },
+                        ),
+                        ChoiceChip(
+                            label: Text(symptoms[5].toString()),
+                            selected: symptoms[5].isSelected,
+                            onSelected: (bool newValue) {
+                              setState(() {
+                                symptoms[5].isSelected = newValue;
+                              });
+                            })
+                      ],
                     ),
                     ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState.validate()) {
+                          symptoms
+                              .removeWhere((element) => !element.isSelected);
+                          DiaryEntry diaryEntry =
+                          new DiaryEntry(_feelingRating, _sleepQuality, _hasEaten, symptoms);
                           Appointment appointment = Appointment(
-                              startTime: DateTime(
-                                  currentDate.year, currentDate.month,
-                                  currentDate.day, _startTimeOfDay.hour,
-                                  _startTimeOfDay.minute),
-                              endTime: DateTime(
-                                  currentDate.year, currentDate.month,
-                                  currentDate.day, _endTimeOfDay.hour,
-                                  _endTimeOfDay.minute),
-                              subject: _moodEditingController.text.trim(),
-                              color: Colors.pinkAccent
-                          );
+                              startTime: currentDate,
+                              isAllDay: true,
+                              subject: diaryEntry.toString(),
+                              color: Colors.pinkAccent);
 
                           calendarDataSource.appointments?.add(appointment);
                           calendarDataSource.notifyListeners(
                               CalendarDataSourceAction.add,
-                              <Appointment>[appointment]
-                          );
+                              <Appointment>[appointment]);
                           Navigator.pop(context);
                         }
                       },
@@ -104,5 +265,9 @@ class AppointmentCreator {
         );
       },
     );
+  }
+
+  void onFeelingPressed(int feelingRating) {
+    _feelingRating = feelingRating;
   }
 }
