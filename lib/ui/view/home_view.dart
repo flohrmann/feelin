@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myflutterapp/datasource/MeetingDataSource.dart';
 import 'package:myflutterapp/dialog/appointment_creator.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import './settings.dart';
 
 class HomeView extends StatefulWidget {
   HomeView({Key key, this.title}) : super(key: key);
@@ -42,17 +43,24 @@ class _HomeViewState extends State<HomeView>
             backgroundColor: Colors.green,
             title: Text("Feelin"),
             actions: [
-              PopupMenuButton(
+              PopupMenuButton<int>(
+                  enabled: true,
+
                   itemBuilder: (context) => [
-                    PopupMenuItem(
+                    PopupMenuItem<int>(
                       child: Text("Home"),
-                      value: 1,
+                      value: 0,
                     ),
-                    PopupMenuItem(
+                    PopupMenuItem<int>(
                       child: Text("Settings"),
-                      value: 2,
+                      value: 1,
+
+
                     )
-                  ]
+                  ],
+                //change sites
+                onSelected: (item) => SelectedItem(context, item),
+
               )
             ],
           ),
@@ -111,5 +119,16 @@ class _HomeViewState extends State<HomeView>
   void addButtonPressed() {
     AppointmentCreator d = new AppointmentCreator();
     d.showAppointmentDialog(context, _calendarDataSource, _dateTime);
+  }
+
+  void SelectedItem(BuildContext context, item) {
+    switch(item) {
+      case 0:
+        break;
+        case 1:
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => SettingPage()));
+          break;
+    }
   }
 }
