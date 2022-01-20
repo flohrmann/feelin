@@ -165,71 +165,17 @@ class AppointmentCreator {
                         )
                       ],
                     ),
-                    Row(
-                      children: [
-                        ChoiceChip(
-                          label: Text(symptoms[0].toString()),
-                          selected: symptoms[0].isSelected,
-                          onSelected: (bool newValue) {
-                            setState(() {
-                              symptoms[0].isSelected = newValue;
-                            });
-                          },
-                        ),
-                        ChoiceChip(
-                          label: Text(symptoms[1].toString()),
-                          selected: symptoms[1].isSelected,
-                          onSelected: (bool newValue) {
-                            setState(() {
-                              symptoms[1].isSelected = newValue;
-                            });
-                          },
-                        )
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        ChoiceChip(
-                          label: Text(symptoms[2].toString()),
-                          selected: symptoms[2].isSelected,
-                          onSelected: (bool newValue) {
-                            setState(() {
-                              symptoms[2].isSelected = newValue;
-                            });
-                          },
-                        ),
-                        ChoiceChip(
-                          label: Text(symptoms[3].toString()),
-                          selected: symptoms[3].isSelected,
-                          onSelected: (bool newValue) {
-                            setState(() {
-                              symptoms[3].isSelected = newValue;
-                            });
-                          },
-                        )
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        ChoiceChip(
-                          label: Text(symptoms[4].toString()),
-                          selected: symptoms[4].isSelected,
-                          onSelected: (bool newValue) {
-                            setState(() {
-                              symptoms[4].isSelected = newValue;
-                            });
-                          },
-                        ),
-                        ChoiceChip(
-                            label: Text(symptoms[5].toString()),
-                            selected: symptoms[5].isSelected,
-                            onSelected: (bool newValue) {
-                              setState(() {
-                                symptoms[5].isSelected = newValue;
+                    Column(
+                        children: List.generate(symptoms.length, (index) {
+                          return ChoiceChip(
+                              label: Text(symptoms[index].toString()),
+                              selected: symptoms[index].isSelected,
+                              onSelected: (bool newValue) {
+                                setState(() {
+                                  symptoms[index].isSelected = newValue;
+                                });
                               });
-                            })
-                      ],
-                    ),
+                        })),
                     ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState.validate()) {
