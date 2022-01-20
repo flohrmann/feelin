@@ -1,8 +1,12 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:myflutterapp/datasource/MeetingDataSource.dart';
 import 'package:myflutterapp/dialog/appointment_creator.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import './settings.dart';
+import './table.dart';
 
 class HomeView extends StatefulWidget {
   HomeView({Key key, this.title}) : super(key: key);
@@ -54,8 +58,23 @@ class _HomeViewState extends State<HomeView>
                     PopupMenuItem<int>(
                       child: Text("Settings"),
                       value: 1,
+                    ),
+                    PopupMenuItem(
+                      child: Text('Data'),
+                      value: 2,
 
-
+                    ),
+                    PopupMenuItem(
+                      child: Text('Exit'),
+                      value: 3,
+                      onTap: () {
+                        if(Platform.isAndroid){
+                          SystemNavigator.pop();
+                        }
+                        //else if (Platform.isIOS){
+                          //exit(0); //doesnt work
+                        //}
+                        }
                     )
                   ],
                 //change sites
@@ -125,10 +144,14 @@ class _HomeViewState extends State<HomeView>
     switch(item) {
       case 0:
         break;
-        case 1:
+      case 1:
           Navigator.of(context)
               .push(MaterialPageRoute(builder: (context) => SettingPage()));
           break;
+      case 2:
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => TableView()));
+        break;
     }
   }
 }
