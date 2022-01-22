@@ -1,166 +1,278 @@
-import 'dart:io' show Platform;
+import 'dart:io';
 
+import 'package:feelin/ui/view/base_view.dart';
+import 'package:feelin/ui/view/settings_view.dart';
+import 'package:feelin/ui/view/statistic_view.dart';
+import 'package:feelin/ui/viewmodel/home_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:myflutterapp/datasource/MeetingDataSource.dart';
-import 'package:myflutterapp/dialog/appointment_creator.dart';
-import 'package:myflutterapp/ui/ThemeClass.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import './settings.dart';
-import './table.dart';
 
 class HomeView extends StatefulWidget {
-  HomeView({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+  const HomeView({Key? key}) : super(key: key);
 
   @override
   _HomeViewState createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView>
-{
-  CalendarDataSource _calendarDataSource;
-  DateTime _dateTime;
+class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
+  int _angle = 90;
+  bool _isRotated = true;
+
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  late Animation<double> _animation2;
 
   @override
   void initState() {
-    super.initState();
+    _controller = new AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 180),
+    );
 
-    _calendarDataSource = MeetingDataSource(getAppointments());
-    _dateTime = null;
+    _animation = new CurvedAnimation(
+      parent: _controller,
+      curve: new Interval(0.0, 1.0, curve: Curves.linear),
+    );
+
+    _animation2 = new CurvedAnimation(
+      parent: _controller,
+      curve: new Interval(0.5, 1.0, curve: Curves.linear),
+    );
+
+    _controller.reverse();
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Scaffold(
-          appBar: AppBar(
-            //backgroundColor:Theme.of(context).appBarTheme.backgroundColor ,
-            backgroundColor: Colors.lightGreen,
-            title: Text("Feelin"),
-            actions: [
-              PopupMenuButton<int>(
-                  enabled: true,
-
-                  itemBuilder: (context) => [
-                    PopupMenuItem<int>(
-                      child: Text("Home"),
-                      value: 0,
-                    ),
-                    PopupMenuItem<int>(
-                      child: Text("Settings"),
-                      value: 1,
-                    ),
-                    PopupMenuItem(
-                      child: Text('Data'),
-                      value: 2,
-
-                    ),
-                    PopupMenuItem(
-                      child: Text('Exit'),
-                      value: 3,
-                      onTap: () {
-                        //https://stackoverflow.com/questions/45109557/flutter-how-to-programmatically-exit-the-app
-                        if(Platform.isAndroid){
-                          SystemNavigator.pop();
-                        }
-                        //else if (Platform.isIOS){
-                          //exit(0); //doesnt work
-                        //}
-                        }
-                    )
-                  ],
-                //change sites
-                onSelected: (item) => SelectedItem(context, item),
-
-              )
-            ],
-          ),
-          body: SfCalendar(
-              view: CalendarView.month,
-              onTap: calendarTapped,
-              dataSource: _calendarDataSource,
-              monthViewSettings: MonthViewSettings(
-                  showAgenda: true, // creates agenda below calendar
-                  agendaViewHeight: 300, //sets height of agenda below calendar
-                  agendaItemHeight: 70, //size of agenda items
-
-                  agendaStyle: AgendaStyle(
-                      backgroundColor: Colors.white54,
-                      appointmentTextStyle: TextStyle(
-                          fontSize: 14,
-                          fontStyle: FontStyle.italic,
-                          //color: Theme.of(context).appBarTheme.backgroundColor ,
-                          color: Colors.black
-                      )
-                  ),
-
-                  appointmentDisplayMode: MonthAppointmentDisplayMode.indicator
-              )),
-          floatingActionButton: FloatingActionButton(
-            onPressed: addButtonPressed,
-            child: Text ('+'),
-            //backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-            backgroundColor: Colors.red[600],
-          ),
-        )
-    );
-  }
-
-  List<Appointment> getAppointments() {
-    List<Appointment> meetings = <Appointment>[];
-    final DateTime today = DateTime.now();
-    final DateTime startTime =
-    DateTime(today.year, today.month, today.day, 9, 0, 0);
-    final DateTime endTime = startTime.add(const Duration(hours: 2));
-
-    meetings.add(Appointment(
-        startTime: startTime,
-        endTime: endTime,
-        subject: 'Board Meeting',
-        color: Colors.orangeAccent,
-        recurrenceRule: 'FREQ=DAILY;COUNT=10',
-        isAllDay: false));
-
-    return meetings;
-  }
-
-  void calendarTapped(CalendarTapDetails calendarTapDetails) {
-    setState(() {
-      _dateTime = calendarTapDetails.date;
+    return BaseView<HomeViewModel>(builder: (context, model, child) {
+      return Scaffold(appBar: _buildAppBar(model), body: _buildBody(model), floatingActionButton: _buildAddButton(model));
     });
   }
 
-  void addButtonPressed() {
-    AppointmentCreator d = new AppointmentCreator();
-    d.showAppointmentDialog(context, _calendarDataSource, _dateTime);
-  }
+  AppBar _buildAppBar(HomeViewModel model) {
+    var title = Text('Home');
 
-
-  //button functionality
-  //https://protocoderspoint.com/how-to-create-3-dot-popup-menu-item-on-appbar-flutter/
-  void SelectedItem(BuildContext context, item) {
-    switch(item) {
-      case 0:
-        break;
+    switch (model.selectedIndex) {
       case 1:
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => SettingPage()));
-          break;
+        title = Text('Statistics');
+        break;
       case 2:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => TableView()));
+        title = Text('Settings');
+        break;
+      default:
+        // Default is Home page. Which is also the initial value of our variable
         break;
     }
+
+    return AppBar(
+      backgroundColor: Colors.lightGreen,
+      title: title,
+      actions: [
+        PopupMenuButton<int>(
+          enabled: true,
+          itemBuilder: (context) => [
+            PopupMenuItem<int>(child: Text("Home"), onTap: () => model.selectedIndex = 0),
+            PopupMenuItem(child: Text('Statistics'), onTap: () => model.selectedIndex = 1),
+            PopupMenuItem<int>(child: Text("Settings"), onTap: () => model.selectedIndex = 2),
+            PopupMenuItem(
+                child: Text('Exit'),
+                value: 3,
+                onTap: () {
+                  //https://stackoverflow.com/questions/45109557/flutter-how-to-programmatically-exit-the-app
+                  if (Platform.isAndroid) {
+                    SystemNavigator.pop();
+                  }
+                })
+          ],
+        )
+      ],
+    );
+  }
+
+  Widget _buildBody(HomeViewModel model) {
+    switch (model.selectedIndex) {
+      // Show statistics
+      case 1:
+      return const StatisticView();
+      // Show Settings
+      case 2:
+      return const SettingsView();
+      // Show default home page
+      default:
+        return SfCalendar(
+          view: CalendarView.month,
+          onTap: (details) => model.selectedDate = details.date!,
+          dataSource: model.calendarDataSource,
+          monthViewSettings: MonthViewSettings(
+              showAgenda: true,
+              agendaViewHeight: 300,
+              agendaItemHeight: 150,
+              agendaStyle: AgendaStyle(
+                  backgroundColor: Colors.white54, appointmentTextStyle: TextStyle(fontSize: 14, fontStyle: FontStyle.italic, color: Colors.black))),
+        );
+    }
+  }
+
+  Widget _buildAddButton(HomeViewModel model) {
+    if (model.selectedIndex != 0) {
+      return Text('');
+    }
+
+    return new Stack(
+      children: [
+        new Positioned(
+          bottom: 144.0,
+          right: 24.0,
+          child: new Container(
+            child: new Row(
+              children: [
+                new ScaleTransition(
+                  scale: _animation2,
+                  alignment: FractionalOffset.center,
+                  child: new Container(
+                    margin: new EdgeInsets.only(right: 16.0),
+                    child: new Text(
+                        'Create or update entry',
+                    style: new TextStyle(
+                      fontSize: 13.0,
+                      fontFamily: 'Roboto',
+                      color: new Color(0xFF9E9E9E),
+                      fontWeight: FontWeight.bold
+                    )
+                    )
+                  )
+                ),
+            new ScaleTransition(
+              scale: _animation2,
+              alignment: FractionalOffset.center,
+              child: new Material(
+                  color: new Color(0xFF00BFA5),
+                  type: MaterialType.circle,
+                  elevation: 6.0,
+                  child: new GestureDetector(
+                    child: new Container(
+                        width: 40.0,
+                        height: 40.0,
+                        child: new InkWell(
+                          onTap: () {
+                            if(_angle == 45.0){
+                              model.createOrUpdateAppointment(context);
+                            }
+                          },
+                          child: new Center(
+                            child: new Icon(
+                              Icons.add,
+                              color: new Color(0xFFFFFFFF),
+                            )
+                          )
+                        )
+                    )
+                  )
+              )
+              ),
+              ],
+            ),
+          )
+        ),
+        new Positioned(
+            bottom: 88.0,
+            right: 24.0,
+            child: new Container(
+              child: new Row(
+                children: <Widget>[
+                  new ScaleTransition(
+                    scale: _animation,
+                    alignment: FractionalOffset.center,
+                    child: new Container(
+                      margin: new EdgeInsets.only(right: 16.0),
+                      child: new Text(
+                        'Remove existing entry',
+                        style: new TextStyle(
+                          fontSize: 13.0,
+                          fontFamily: 'Roboto',
+                          color: new Color(0xFF9E9E9E),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  new ScaleTransition(
+                    scale: _animation,
+                    alignment: FractionalOffset.center,
+                    child: new Material(
+                        color: new Color(0xFFE57373),
+                        type: MaterialType.circle,
+                        elevation: 6.0,
+                        child: new GestureDetector(
+                          child: new Container(
+                              width: 40.0,
+                              height: 40.0,
+                              child: new InkWell(
+                                onTap: (){
+                                  if(_angle == 45.0){
+                                    model.deleteDiaryEntry();
+                                  }
+                                },
+                                child: new Center(
+                                  child: new Icon(
+                                    Icons.remove,
+                                    color: new Color(0xFFFFFFFF),
+                                  ),
+                                ),
+                              )
+                          ),
+                        )
+                    ),
+                  ),
+                ],
+              ),
+            )
+        ),
+        new Positioned(
+          bottom: 16.0,
+          right: 16.0,
+          child: new Material(
+              color: new Color(0xFFE57373),
+              type: MaterialType.circle,
+              elevation: 6.0,
+              child: new GestureDetector(
+                child: new Container(
+                    width: 56.0,
+                    height: 56.00,
+                    child: new InkWell(
+                      onTap: _rotate,
+                      child: new Center(
+                          child: new RotationTransition(
+                            turns: new AlwaysStoppedAnimation(_angle / 360),
+                            child: new Icon(
+                              Icons.add,
+                              color: new Color(0xFFFFFFFF),
+                            ),
+                          )
+                      ),
+                    )
+                ),
+              )
+          ),
+        )
+      ]
+    );
+  }
+
+  void _rotate(){
+    setState((){
+      if(_isRotated) {
+        _angle = 45;
+        _isRotated = false;
+        _controller.forward();
+      } else {
+        _angle = 90;
+        _isRotated = true;
+        _controller.reverse();
+      }
+    });
   }
 }

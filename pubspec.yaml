@@ -1,5 +1,5 @@
-name: myflutterapp
-description: A new Flutter project.
+name: feelin
+description: A project for registering a persons daily mood
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -18,17 +18,24 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  syncfusion_flutter_calendar: ^18.4.46
+  syncfusion_flutter_calendar: ^19.1.57
 
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.1
+  shared_preferences: ^2.0.12
+  intl: ^0.17.0
+  get_it: ^7.2.0
+  get: ^4.6.1
+  provider: ^6.0.2
+  flutter_screenutil: ^5.1.0
+  percent_indicator: ^4.0.0
 
 dev_dependencies:
   flutter_test:
