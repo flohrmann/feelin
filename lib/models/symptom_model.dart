@@ -2,6 +2,8 @@ class Symptom {
   String _name;
   bool isSelected = false;
 
+  String get name => _name;
+
   Symptom(this._name);
 
   // Possibility to add more info to this.

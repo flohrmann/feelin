@@ -1,0 +1,5 @@
+enum DiaryData {
+  GENERAL_FEELING,
+  SLEEP_QUALITY,
+  HAS_EATEN
+}
